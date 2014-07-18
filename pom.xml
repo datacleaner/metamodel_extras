@@ -16,7 +16,7 @@
 	</parent>
 	<groupId>org.eobjects.metamodel-extras</groupId>
 	<artifactId>MetaModel-extras</artifactId>
-	<version>4.0.1-SNAPSHOT</version>
+	<version>4.2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>MetaModel extras</name>
 	<description>
