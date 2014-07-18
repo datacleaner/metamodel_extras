@@ -193,19 +193,19 @@ public final class DbaseDataContext extends QueryPostprocessDataContext implemen
         if (stringValue == null || stringValue.length() == 0) {
             return null;
         }
-        switch (type) {
-        case FLOAT:
+
+        if (type == ColumnType.FLOAT) {
             return Float.parseFloat(stringValue);
-        case DOUBLE:
+        } else if (type == ColumnType.DOUBLE) {
             return Double.parseDouble(stringValue);
-        case DATE:
+        } else if (type == ColumnType.DATE) {
             try {
                 Date date = new SimpleDateFormat("yyyyMMdd").parse(stringValue);
                 return date;
             } catch (ParseException e) {
                 throw new IllegalArgumentException(stringValue);
             }
-        default:
+        } else {
             return stringValue;
         }
     }

@@ -38,6 +38,7 @@ import org.apache.metamodel.query.FilterItem;
 import org.apache.metamodel.query.SelectItem;
 import org.apache.metamodel.schema.Column;
 import org.apache.metamodel.schema.ColumnType;
+import org.apache.metamodel.schema.ColumnTypeImpl;
 import org.apache.metamodel.schema.MutableColumn;
 import org.apache.metamodel.schema.MutableSchema;
 import org.apache.metamodel.schema.MutableTable;
@@ -92,7 +93,7 @@ public final class AccessDataContext extends QueryPostprocessDataContext {
             try {
                 int i = 0;
                 for (com.healthmarketscience.jackcess.Column mdbColumn : mdbTable.getColumns()) {
-                    final ColumnType columnType = ColumnType.convertColumnType(mdbColumn.getSQLType());
+                    final ColumnType columnType = ColumnTypeImpl.convertColumnType(mdbColumn.getSQLType());
                     final MutableColumn column = new MutableColumn(mdbColumn.getName(), columnType, table, i, null);
                     column.setColumnSize((int) mdbColumn.getLength());
                     column.setNativeType(mdbColumn.getType().name());
