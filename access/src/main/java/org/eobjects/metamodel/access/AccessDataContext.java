@@ -45,6 +45,9 @@ import org.apache.metamodel.schema.MutableTable;
 import org.apache.metamodel.schema.Schema;
 import org.apache.metamodel.schema.Table;
 import org.apache.metamodel.schema.TableType;
+import org.apache.metamodel.util.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Index;
@@ -52,10 +55,10 @@ import com.healthmarketscience.jackcess.IndexData.ColumnDescriptor;
 
 /**
  * DataContext implementation for MS Access database files.
- * 
- * @author Kasper Sørensen
  */
 public final class AccessDataContext extends QueryPostprocessDataContext {
+
+    private static final Logger logger = LoggerFactory.getLogger(AccessDataContext.class);
 
     private final File _file;
     private Database _database;
@@ -102,12 +105,16 @@ public final class AccessDataContext extends QueryPostprocessDataContext {
                     i++;
                 }
 
-                final Index primaryKeyIndex = mdbTable.getPrimaryKeyIndex();
-                final List<ColumnDescriptor> columnDescriptors = primaryKeyIndex.getColumns();
-                for (ColumnDescriptor columnDescriptor : columnDescriptors) {
-                    final String name = columnDescriptor.getColumn().getName();
-                    final MutableColumn column = (MutableColumn) table.getColumnByName(name);
-                    column.setPrimaryKey(true);
+                try {
+                    final Index primaryKeyIndex = mdbTable.getPrimaryKeyIndex();
+                    final List<ColumnDescriptor> columnDescriptors = primaryKeyIndex.getColumns();
+                    for (ColumnDescriptor columnDescriptor : columnDescriptors) {
+                        final String name = columnDescriptor.getColumn().getName();
+                        final MutableColumn column = (MutableColumn) table.getColumnByName(name);
+                        column.setPrimaryKey(true);
+                    }
+                } catch (Exception e) {
+                    logger.warn("Failed to get PK index info for table: {}", mdbTable, e);
                 }
 
                 schema.addTable(table);
