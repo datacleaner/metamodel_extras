@@ -44,8 +44,6 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link DataContext} for a directory of SAS tables (aka. a "libref" in
  * SAS-lingo).
- * 
- * @author Kasper Sørensen
  */
 public final class SasDataContext extends QueryPostprocessDataContext {
 

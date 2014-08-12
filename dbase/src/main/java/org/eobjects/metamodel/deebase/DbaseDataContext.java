@@ -59,8 +59,6 @@ import org.xBaseJ.fields.PictureField;
 
 /**
  * DataContext implementation for dBase database files.
- * 
- * @author Kasper Sørensen
  */
 public final class DbaseDataContext extends QueryPostprocessDataContext implements Closeable {
 
