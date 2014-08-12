@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.metamodel.MetaModelException;
 import org.apache.metamodel.QueryPostprocessDataContext;
@@ -49,8 +48,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.healthmarketscience.jackcess.Index;
-import com.healthmarketscience.jackcess.IndexData.ColumnDescriptor;
 
 /**
  * DataContext implementation for MS Access database files.
@@ -75,7 +74,7 @@ public final class AccessDataContext extends QueryPostprocessDataContext {
             synchronized (this) {
                 if (_database == null) {
                     try {
-                        _database = Database.open(_file, true);
+                        _database = new DatabaseBuilder(_file).setReadOnly(true).open();
                     } catch (IOException e) {
                         throw new MetaModelException(e);
                     }
@@ -106,11 +105,14 @@ public final class AccessDataContext extends QueryPostprocessDataContext {
 
                 try {
                     final Index primaryKeyIndex = mdbTable.getPrimaryKeyIndex();
-                    final List<ColumnDescriptor> columnDescriptors = primaryKeyIndex.getColumns();
-                    for (ColumnDescriptor columnDescriptor : columnDescriptors) {
-                        final String name = columnDescriptor.getColumn().getName();
+                    final List<? extends com.healthmarketscience.jackcess.Index.Column> columnDescriptors = primaryKeyIndex
+                            .getColumns();
+                    for (com.healthmarketscience.jackcess.Index.Column columnDescriptor : columnDescriptors) {
+                        final String name = columnDescriptor.getName();
                         final MutableColumn column = (MutableColumn) table.getColumnByName(name);
-                        column.setPrimaryKey(true);
+                        if (column != null) {
+                            column.setPrimaryKey(true);
+                        }
                     }
                 } catch (Exception e) {
                     logger.warn("Failed to get PK index info for table: {}", mdbTable, e);
@@ -153,10 +155,10 @@ public final class AccessDataContext extends QueryPostprocessDataContext {
 
             int rowNum = 0;
             final List<Row> data = new LinkedList<Row>();
-            final Iterator<Map<String, Object>> it = mdbTable.iterator();
+            final Iterator<com.healthmarketscience.jackcess.Row> it = mdbTable.iterator();
             while (it.hasNext() && (maxRows < 0 || rowNum < maxRows)) {
                 rowNum++;
-                final Map<String, Object> valueMap = it.next();
+                final com.healthmarketscience.jackcess.Row valueMap = it.next();
                 final Object[] values = new Object[columns.length];
                 for (int j = 0; j < columns.length; j++) {
                     values[j] = valueMap.get(columns[j].getName());
@@ -169,7 +171,11 @@ public final class AccessDataContext extends QueryPostprocessDataContext {
             throw new MetaModelException(e);
         }
     }
-
+    
+    public File getFile() {
+        return _file;
+    }
+    
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
