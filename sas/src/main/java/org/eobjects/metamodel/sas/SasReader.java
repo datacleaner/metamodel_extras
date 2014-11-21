@@ -104,6 +104,7 @@ public class SasReader {
 
 			SasHeader header = readHeader(is);
 			logger.info("({}) Header: {}", _file, header);
+			System.out.println(String.format("Header: %s", header.toString()));
 
 			readPages(is, header, callback);
 
@@ -431,12 +432,26 @@ public class SasReader {
 			throw new SasReaderException("Magic number mismatch!");
 		}
 
-		final int pageSize = IO.readInt(header, 200);
+        final byte byte32 = IO.readByte(header, 32);
+        final byte byte35 = IO.readByte(header, 35);
+        final byte byte37 = IO.readByte(header, 37);
+
+        int a2 = byte32 == 0x33 ? 4 : 0;
+        int a1 = byte35 == 0x33 ? 4 : 0;
+
+        boolean bigEndian = byte37 == 0;
+        boolean u64 = a2 == 4;
+
+        System.out.println(String.format("Endianness: %s", (bigEndian ? "big" : "little")));
+        System.out.println(String.format("U64? %s", String.valueOf(u64)));
+        System.out.println(String.format("a1=%d, a2=%d", a1, a2));
+
+		final int pageSize = IO.readInt(header, 200+a1);
 		if (pageSize < 0) {
 			throw new SasReaderException("Page size is negative: " + pageSize);
 		}
 
-		final int pageCount = IO.readInt(header, 204);
+		final int pageCount = IO.readInt(header, 204+a1);
 		if (pageCount < 1) {
 			throw new SasReaderException("Page count is not positive: "
 					+ pageCount);
