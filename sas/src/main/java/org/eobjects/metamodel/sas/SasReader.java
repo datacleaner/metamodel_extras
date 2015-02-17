@@ -314,8 +314,7 @@ public class SasReader {
 				int base;
 				if (pageType == 2) {
 					row_count_p = row_count_fp;
-					int subhCount = IO.readInt(pageData, 20);
-					base = 24 + subhCount * 12;
+					base = 24 + subHeaders.size() * 12 + 12;
 					base = base + base % 8;
 				} else {
 					row_count_p = IO.readInt(pageData, 18);
