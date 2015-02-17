@@ -41,13 +41,6 @@ public class SasReaderTest extends TestCase {
     /**
      * TODO: Ignored for release
      */
-//    public void testReadTestDataSet() throws Exception {
-//        readSas(new File("C:/Users/kaspers/Dropbox/Kode/sas/test/test.sas7bdat"), 10, 100, null);
-//    }
-
-    /**
-     * TODO: Ignored for release
-     */
     // public void testCharsetCyrillicAndMore() throws Exception {
     // readSas("charset_cyrillic_and_more.sas7bdat", 1, 7,
     // createComparisonDataSet("charset_cyrillic_and_more.tsv"));
@@ -65,22 +58,22 @@ public class SasReaderTest extends TestCase {
     /**
      * TODO: Ignored for release
      */
-    // public void testReadPhyseds2006() throws Exception {
-    // List<Object[]> sampleRows = readSas("physeds2006.sas7bdat", 232, 51,
-    // createComparisonDataSet("physeds2006.tsv"));
-    //
-    // assertEquals(51, sampleRows.size());
-    //
-    // assertEquals("Alabama", sampleRows.get(0)[1]);
-    // assertEquals("Alaska", sampleRows.get(1)[1]);
-    // assertEquals("Arizona", sampleRows.get(2)[1]);
-    // assertEquals("Arkansas", sampleRows.get(3)[1]);
-    // assertEquals("California", sampleRows.get(4)[1]);
-    // assertEquals("Colorado", sampleRows.get(5)[1]);
-    // assertEquals("Connecticut", sampleRows.get(6)[1]);
-    // assertEquals("Delaware", sampleRows.get(7)[1]);
-    // assertEquals("Wyoming", sampleRows.get(50)[1]);
-    // }
+//     public void testReadPhyseds2006() throws Exception {
+//     List<Object[]> sampleRows = readSas("physeds2006.sas7bdat", 232, 51,
+//     createComparisonDataSet("physeds2006.tsv"));
+//    
+//     assertEquals(51, sampleRows.size());
+//    
+//     assertEquals("Alabama", sampleRows.get(0)[1]);
+//     assertEquals("Alaska", sampleRows.get(1)[1]);
+//     assertEquals("Arizona", sampleRows.get(2)[1]);
+//     assertEquals("Arkansas", sampleRows.get(3)[1]);
+//     assertEquals("California", sampleRows.get(4)[1]);
+//     assertEquals("Colorado", sampleRows.get(5)[1]);
+//     assertEquals("Connecticut", sampleRows.get(6)[1]);
+//     assertEquals("Delaware", sampleRows.get(7)[1]);
+//     assertEquals("Wyoming", sampleRows.get(50)[1]);
+//     }
 
     public void testReadBeef() throws Exception {
         readSas("beef.sas7bdat", 9, 30, createComparisonDataSet("beef.tsv"));
