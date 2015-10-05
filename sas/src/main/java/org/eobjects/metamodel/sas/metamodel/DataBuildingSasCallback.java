@@ -43,8 +43,11 @@ final class DataBuildingSasCallback implements SasReaderCallback {
 	}
 
 	@Override
-	public void column(int columnIndex, String columnName, String columnLabel,
-			SasColumnType columnType, int columnLength) {
+	public void column(int columnIndex,
+					   String columnName,
+					   String columnLabel,
+					   SasColumnType columnType,
+					   int columnLength) {
 		// do nothing
 	}
 

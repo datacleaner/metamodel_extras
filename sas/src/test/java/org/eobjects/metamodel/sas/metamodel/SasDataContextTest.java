@@ -73,10 +73,10 @@ public class SasDataContextTest extends TestCase {
 		Schema schema = dc.getDefaultSchema();
 
 		assertEquals("Schema[name=resources]", schema.toString());
-		assertEquals(8, schema.getTableCount());
+		assertEquals(9, schema.getTableCount());
 
 		assertEquals(
-				"[beef, charset_cyrillic_and_more, charset_mostly_latin, event2, mammals, mathattitudes, physeds2006, pizza]",
+				"[beef, charset_cyrillic_and_more, charset_mostly_latin, date_dd_mm_yyyy, event2, mammals, mathattitudes, physeds2006, pizza]",
 				Arrays.toString(schema.getTableNames()));
 
 		Table table = schema.getTableByName("pizza");

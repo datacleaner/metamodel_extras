@@ -21,12 +21,17 @@ package org.eobjects.metamodel.sas;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.metamodel.data.DataSet;
 import org.apache.metamodel.query.SelectItem;
 import org.eobjects.metamodel.sas.SasColumnType;
 import org.eobjects.metamodel.sas.SasReaderCallback;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
+import org.joda.time.format.DateTimeParser;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.slf4j.Logger;
@@ -45,6 +50,13 @@ class CountingSasReaderCallback implements SasReaderCallback {
     private int columnCount = 0;
     private int rowCount = 0;
 
+    private DateTimeFormatter dateTimeParser =
+            new DateTimeFormatterBuilder()
+                    .appendDayOfMonth(2)
+                    .appendMonthOfYearShortText()
+                    .appendYear(4, 4)
+                    .toFormatter();
+
     public CountingSasReaderCallback(boolean readData, DataSet compareToDataSet) {
         this.readData = readData;
         this.compareToDataSet = compareToDataSet;
@@ -56,8 +68,11 @@ class CountingSasReaderCallback implements SasReaderCallback {
     }
 
     @Override
-    public void column(int columnIndex, String columnName, String columnLabel, SasColumnType columnType,
-            int columnLength) {
+    public void column(int columnIndex,
+                       String columnName,
+                       String columnLabel,
+                       SasColumnType columnType,
+                       int columnLength) {
         columnCount++;
         if (compareToDataSet != null) {
             SelectItem selectItem = compareToDataSet.getSelectItems()[columnIndex];
@@ -93,6 +108,8 @@ class CountingSasReaderCallback implements SasReaderCallback {
                     } catch (NumberFormatException e) {
                         logger.error("Could not parse {} as number", benchValues[i]);
                     }
+                } else if (actualValue instanceof DateTime) {
+                    benchValue = dateTimeParser.parseDateTime(String.valueOf(benchValue));
                 }
 
                 if (!benchValue.equals(actualValue)) {
@@ -102,7 +119,7 @@ class CountingSasReaderCallback implements SasReaderCallback {
                             .toString());
                     Assert.assertEquals(
                             "Bench and actual values does not match: " + benchValue + " vs. " + actualValue,
-                            benchValue.toString(), actualValue.toString());
+                            String.valueOf(benchValue), String.valueOf(actualValue));
                 }
 
                 benchValues[i] = benchValue;
