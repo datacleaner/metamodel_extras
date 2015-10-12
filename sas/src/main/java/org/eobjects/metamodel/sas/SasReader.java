@@ -104,7 +104,7 @@ public class SasReader {
 
 			SasHeader header = readHeader(is);
 			logger.info("({}) Header: {}", _file, header);
-			System.out.println(String.format("Header: %s", header.toString()));
+			logger.debug("Header: {}", header.toString());
 
 			readPages(is, header, callback);
 
@@ -442,9 +442,9 @@ public class SasReader {
         boolean bigEndian = byte37 == 0;
         boolean u64 = a2 == 4;
 
-        System.out.println(String.format("Endianness: %s", (bigEndian ? "big" : "little")));
-        System.out.println(String.format("U64? %s", String.valueOf(u64)));
-        System.out.println(String.format("a1=%d, a2=%d", a1, a2));
+        logger.debug("Endianness: {}", (bigEndian ? "big" : "little"));
+        logger.debug("U64? {}", String.valueOf(u64));
+        logger.debug("a1={}, a2={}", a1, a2);
 
 		final int pageSize = IO.readInt(header, 200+a1);
 		if (pageSize < 0) {
