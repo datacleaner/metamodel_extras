@@ -12,7 +12,7 @@
 		<!-- See https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide -->
 		<groupId>org.sonatype.oss</groupId>
 		<artifactId>oss-parent</artifactId>
-		<version>7</version>
+		<version>9</version>
 	</parent>
 	<groupId>org.eobjects.metamodel-extras</groupId>
 	<artifactId>MetaModel-extras</artifactId>
