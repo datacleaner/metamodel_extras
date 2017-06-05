@@ -48,12 +48,22 @@ final class ColumnBuildingSasCallback implements SasReaderCallback {
 	public void column(int columnIndex, String columnName, String columnLabel,
 			SasColumnType columnType, int columnLength) {
 		final ColumnType type;
-		if (columnType == SasColumnType.NUMERIC) {
-			type = ColumnType.NUMERIC;
-		} else if (columnType == SasColumnType.CHARACTER) {
-			type = ColumnType.VARCHAR;
-		} else {
-			type = null;
+
+		switch(columnType) {
+			case NUMERIC:
+				type = ColumnType.NUMERIC;
+				break;
+			case CHARACTER:
+				type = ColumnType.VARCHAR;
+				break;
+			case DATE:
+				type = ColumnType.DATE;
+				break;
+			case TIME:
+				type = ColumnType.TIME;
+				break;
+			default:
+				type = null;
 		}
 
 		MutableColumn column = new MutableColumn(columnName, type, _table,

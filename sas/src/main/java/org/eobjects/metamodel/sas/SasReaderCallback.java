@@ -44,8 +44,11 @@ public interface SasReaderCallback {
 	 * @param columnLength
 	 *            the length of the column
 	 */
-	public void column(int columnIndex, String columnName, String columnLabel,
-			SasColumnType columnType, int columnLength);
+	public void column(int columnIndex,
+					   String columnName,
+					   String columnLabel,
+					   SasColumnType columnType,
+					   int columnLength);
 
 	/**
 	 * Should the reader read the data/rows (or only columns?)

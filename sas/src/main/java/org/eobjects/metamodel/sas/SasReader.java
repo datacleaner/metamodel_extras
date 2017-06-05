@@ -24,10 +24,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,6 +129,27 @@ public class SasReader {
 				}
 			}
 		}
+	}
+
+	private String asShorts(byte[] rawData) {
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < rawData.length-2; i += 2) {
+			short value = IO.readShort(rawData, i);
+			sb.append(String.format("%05d ", value));
+		}
+		return sb.toString();
+	}
+
+	private String asBytes(byte[] rawData) {
+		return asBytes(rawData, 0, rawData.length);
+	}
+
+	private String asBytes(byte[] rawData, int offset, int len) {
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < len; i += 1) {
+			sb.append(String.format("%02x ", rawData[offset+i]));
+		}
+		return sb.toString();
 	}
 
 	private void readPages(FileInputStream is, SasHeader header,
@@ -262,11 +287,21 @@ public class SasReader {
 
 						// Read column labels
 						final String label;
+						int formatOffset = -1, formatLen = -1;
+						String fmt = null;
+
 						if (colLabels != null && !colLabels.isEmpty()) {
 							base = 42;
 							byte[] rawData = colLabels.get(i).getRawData();
 							int off = IO.readShort(rawData, base) + 4;
 							short len = IO.readShort(rawData, base + 2);
+							formatOffset = IO.readShort(rawData, 36) + 4;
+							formatLen = IO.readShort(rawData, 38);
+
+							if(formatOffset > 0) {
+								fmt = IO.readString(colText.getRawData(), formatOffset, formatLen);
+							}
+
 							if (len > 0) {
 								label = IO.readString(colText.getRawData(),
 										off, len);
@@ -288,18 +323,38 @@ public class SasReader {
 
 						short columnTypeCode = IO.readShort(
 								colAttr.getRawData(), base + 10);
-						SasColumnType columnType = (columnTypeCode == 1 ? SasColumnType.NUMERIC
-								: SasColumnType.CHARACTER);
+
+						SasColumnType columnType = null;
+
+						if(columnTypeCode == 1) {
+							if("DATE".equals(fmt)) {
+								columnType = SasColumnType.DATE;
+							} else if("TIME".equals(fmt)) {
+								columnType = SasColumnType.TIME;
+							}  else {
+								columnType = SasColumnType.NUMERIC;
+							}
+						} else {
+							columnType = SasColumnType.CHARACTER;
+						}
+
 						columnTypes.add(columnType);
 
 						if (logger.isDebugEnabled()) {
 							logger.debug(
-									"({}) column no. {} read: name={},label={},type={},length={}",
-									new Object[] { _file, i, columnName, label,
-											columnType, length });
+									"({}) column no. {} read: name={},label={},columnTypeCode={},type={}," +
+											"offset={},length={},formatOffset={},formatLen={},fmt={}",
+									 _file, i, columnName, label,
+                                    columnTypeCode, columnType, offset, length, formatOffset, formatLen, fmt );
+
 						}
-						callback.column(i, columnName, label, columnType,
-								length);
+
+						logger.debug("Column {} TEXT DATA [{}]", columnName, new String(colText.getRawData(), "ASCII"));
+						//logger.debug("Column {} SIZE DATA [{}]", columnName, asBytes(colSize.getRawData()));
+						logger.debug("Column {} LABELS {} DATA [{}]", columnName, i, asBytes(colLabels.get(i).getRawData()));
+						//logger.debug(String.format("Column %15s ATTR DATA\t[%s]", columnName, asBytes(colAttr.getRawData(), base, 12)));
+
+						callback.column(i, columnName, label, columnType, length);
 					}
 
 					subHeadersParsed = true;
@@ -326,6 +381,15 @@ public class SasReader {
 					row_count_p = row_count;
 				}
 
+				DateTimeConverter converter = new DateTimeConverter();
+
+				org.joda.time.format.DateTimeFormatter formatter =
+						new DateTimeFormatterBuilder()
+								.appendDayOfMonth(2)
+								.appendMonthOfYearShortText()
+								.appendYear(4, 4)
+								.toFormatter();
+
 				for (int row = 0; row < row_count_p; row++) {
 					Object[] rowData = new Object[col_count];
 					for (int col = 0; col < col_count; col++) {
@@ -333,8 +397,10 @@ public class SasReader {
 						int len = columnLengths.get(col);
 
 						SasColumnType columnType = columnTypes.get(col);
+
 						if (len > 0) {
 							byte[] raw = IO.readBytes(pageData, off, len);
+
 							if (columnType == SasColumnType.NUMERIC && len < 8) {
 								ByteBuffer bb = ByteBuffer.allocate(8);
 								for (int j = 0; j < 8 - len; j++) {
@@ -346,22 +412,119 @@ public class SasReader {
 								// col$length <- 8
 								len = 8;
 							}
+							logger.debug("ROW {} col {} RAW {}", row, col, asBytes(raw));
 
-							final Object value;
-							if (columnType == SasColumnType.CHARACTER) {
-								String str = IO.readString(raw, 0, len);
-								str = str.trim();
-								value = str;
-							} else {
-								value = IO.readNumber(raw, 0, len);
+							Object value;
+							switch(columnType) {
+								case CHARACTER:
+									String str = IO.readString(raw, 0, len);
+									str = str.trim();
+									value = str;
+									logger.debug("row {} col {} -> type CHARACTER \"{}\"", row, col, value);
+									break;
+
+								case DATE:
+								case TIME:
+
+									byte[] buffer = raw;
+
+									/*
+									 * Blargh -- need to pack the bytes (if there are fewer than 8) into one
+									 * end of a double-wide floating-point num.
+									 */
+									if(len < 8) {
+										// TODO: there is an implicit endianness assumption here.
+										buffer = new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+										int bufferOff = 8 - len;
+										for (int bi = 0; bi < len; bi++) {
+											buffer[bufferOff + bi] = raw[bi];
+										}
+									}
+
+									logger.debug("{} bytes: {}", String.valueOf(columnType), asBytes(buffer));
+									Double date9double = IO.readDouble(buffer, 0);
+
+									/*
+									 * The _floor_ isn't part of the spec, but it's apparently necessary
+									 * if we want (and we do want) to maintain functional equivalence with
+									 * datetime parsing in the Python .sas7bdat library.
+									 */
+									int date9 = new Double(Math.floor(date9double)).intValue();
+
+									try {
+										if(date9double.isNaN()) {
+
+											/*
+											DateTime doesn't have an equivalent to the 'NaN' for fp numbers, so
+											we need to actually return a null here.
+											 */
+											value = null;
+
+										} else {
+
+											/*
+											This gets caught just below, but it _should_ be rare enough (see the comment
+											in the catch {} block) that it won't be a huge perf hit.
+											 */
+											if (date9double.longValue() < (long) Integer.MIN_VALUE ||
+													date9double.longValue() > (long) Integer.MAX_VALUE) {
+												throw new DateConversionException("date9 value was too big for an integer");
+											}
+
+											value = columnType.equals(SasColumnType.DATE) ?
+													converter.date9ToJava(date9) :
+													converter.time5ToJavaPeriod(date9);
+										}
+
+									} catch(DateConversionException e) {
+
+										/*
+										Apparently (and this insight is gleaned from looking through the Python
+										sas7bdat parser code), it is the case that _sometimes_ a DATE value is actually
+										a TIME or DATETIME instead, and so we need to treat it (despite its label) as
+										a second-valued offset rather than a day-valued one.
+
+										This case is handled in this catch clause, which is basically invoked only when
+										one of the values above (either the raw integer value, or the derived number of
+										seconds or years) is outside of a pre-set boundary.  See DateTimeConverter for
+										more of an explanation for where these boundaries come from.
+										 */
+
+										logger.warn("row {} col {} -> conversion error, warning \"{}\"",
+												row, col, e.getMessage());
+										logger.warn(
+												"row {} col {} -> value {} was labeled {} but appears to be a DATETIME",
+												row, col, date9, String.valueOf(columnType));
+
+										/*
+										The .withMillisOfDay(0) is because we _assume_ that
+										the milliseconds (within in a day), when the field is labeled DATE,
+										are unimportant -- that we only care about the actual year/month/day
+										component of a DATE.
+
+										The test that we have will _fail_, if this is not included.
+										 */
+										value = converter.datetimeToJava(date9).withMillisOfDay(0);
+									}
+
+									logger.debug("row {} col {} -> type {} double={} rawint={} floored_int={} parsed \"{}\"",
+											row, col,
+											String.valueOf(columnType),
+											date9double, date9double.intValue(), date9,
+											value);
+									break;
+
+								case NUMERIC:
+								default:
+									value = IO.readNumber(raw, 0, len);
+									logger.debug("row {} col {} -> type NUMERIC \"{}\"", row, col, value);
 							}
 							rowData[col] = value;
 						}
 					}
 
 					if (logger.isDebugEnabled()) {
-						logger.debug("({}) row no. {} read: {}", new Object[] {
-								_file, row, rowData });
+						logger.debug("({}) row no. {} read: {}",  _file, row, Arrays.toString(rowData) );
 					}
 
 					rowCount++;

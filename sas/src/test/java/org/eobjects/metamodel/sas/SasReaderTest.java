@@ -20,6 +20,7 @@
 package org.eobjects.metamodel.sas;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -30,12 +31,20 @@ import org.apache.metamodel.data.DataSet;
 import org.apache.metamodel.query.Query;
 import org.apache.metamodel.schema.Table;
 import org.eobjects.metamodel.sas.SasReader;
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+import org.joda.time.format.*;
 
 public class SasReaderTest extends TestCase {
 
     public void testCharsetMostlyLatin() throws Exception {
         readSas("charset_mostly_latin.sas7bdat", 1, 7,
                 createComparisonDataSet("charset_mostly_latin.tsv"));
+    }
+
+    public void testDateTimeFormatting() throws Exception {
+        readSas("date_dd_mm_yyyy.sas7bdat", 1, 31,
+                createComparisonDataSet("date_dd_mm_yyyy.tsv"));
     }
 
     /**
@@ -46,6 +55,7 @@ public class SasReaderTest extends TestCase {
     // createComparisonDataSet("charset_cyrillic_and_more.tsv"));
     // }
 
+    /*
     public void testReadEvent2() throws Exception {
         readSas("event2.sas7bdat", 9, 1506, null);
     }
@@ -54,6 +64,7 @@ public class SasReaderTest extends TestCase {
         readSas("mathattitudes.sas7bdat", 15, 1907,
                 createComparisonDataSet("mathattitudes.tsv"));
     }
+    */
 
     /**
      * TODO: Ignored for release

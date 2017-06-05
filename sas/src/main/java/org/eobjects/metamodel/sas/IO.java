@@ -95,6 +95,19 @@ final class IO {
 		return bb.getDouble(off);
 	}
 
+	public static float readFloat(byte[] buffer, int off) {
+		ByteBuffer bb = ByteBuffer.wrap(buffer);
+		bb.order(ByteOrder.LITTLE_ENDIAN);
+		return bb.getFloat(off);
+	}
+
+	public static Long readLong(byte[] buffer, int off) {
+		return ByteBuffer
+				.wrap(buffer)
+				.order(ByteOrder.LITTLE_ENDIAN)
+				.getLong(off);
+	}
+
 	public static byte[] readBytes(byte[] data, int off, int len) {
 		if (data.length < off + len) {
 			throw new SasReaderException("readBytes failed! data.length: "

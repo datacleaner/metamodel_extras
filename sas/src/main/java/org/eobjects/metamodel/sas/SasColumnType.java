@@ -26,5 +26,5 @@ package org.eobjects.metamodel.sas;
  */
 public enum SasColumnType {
 
-	NUMERIC, CHARACTER;
+	NUMERIC, CHARACTER, DATE, TIME;
 }
