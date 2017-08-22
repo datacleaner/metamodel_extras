@@ -19,6 +19,8 @@
  */
 package org.eobjects.metamodel.sas.metamodel;
 
+import java.util.List;
+
 import org.apache.metamodel.data.RowPublisher;
 import org.apache.metamodel.schema.Column;
 import org.apache.metamodel.util.Action;
@@ -27,10 +29,10 @@ import org.eobjects.metamodel.sas.SasReader;
 public final  class SasRowPublisherAction implements Action<RowPublisher> {
 
 	private final SasReader _sasReader;
-	private final Column[] _columns;
+	private final List<Column> _columns;
 	private final int _maxRows;
 
-	public SasRowPublisherAction(SasReader sasReader, Column[] columns,
+	public SasRowPublisherAction(SasReader sasReader, List<Column> columns,
 			int maxRows) {
 		_sasReader = sasReader;
 		_columns = columns;

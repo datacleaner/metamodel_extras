@@ -551,10 +551,13 @@ public class DBF implements Closeable {
             f.delete();
 
             int format = version;
-            if ((format == DBASEIII) && (MDX_exist == 1))
+            if ((format == DBASEIII) && (MDX_exist == 1)) {
                 format = DBASEIV;
+            }
 
-            tempDBF = new DBF(newName, format, true);
+            @SuppressWarnings("resource")
+            DBF tempDBF2 = new DBF(newName, format, true);
+            tempDBF = tempDBF2;
             tempDBF.version = (byte) format;
             tempDBF.MDX_exist = MDX_exist;
 
@@ -2128,6 +2131,7 @@ public class DBF implements Closeable {
         File f = File.createTempFile("tempxbase", "tmp");
         String tempname = f.getAbsolutePath();
 
+        @SuppressWarnings("resource")
         DBF tempDBF = new DBF(tempname, version, true);
 
         tempDBF.reserve = reserve;

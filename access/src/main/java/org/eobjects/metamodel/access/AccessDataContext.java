@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.metamodel.MetaModelException;
 import org.apache.metamodel.QueryPostprocessDataContext;
@@ -143,13 +144,11 @@ public final class AccessDataContext extends QueryPostprocessDataContext {
     }
 
     @Override
-    public DataSet materializeMainSchemaTable(Table table, Column[] columns, int maxRows) {
+    public DataSet materializeMainSchemaTable(Table table, List<Column> columns, int maxRows) {
         try {
             final com.healthmarketscience.jackcess.Table mdbTable = getDatabase().getTable(table.getName());
-            final SelectItem[] selectItems = new SelectItem[columns.length];
-            for (int i = 0; i < columns.length; i++) {
-                selectItems[i] = new SelectItem(columns[i]);
-            }
+            
+            final List<SelectItem> selectItems = columns.stream().map(c -> new SelectItem(c)).collect(Collectors.toList());
 
             final DataSetHeader header = new CachingDataSetHeader(selectItems);
 
@@ -159,9 +158,9 @@ public final class AccessDataContext extends QueryPostprocessDataContext {
             while (it.hasNext() && (maxRows < 0 || rowNum < maxRows)) {
                 rowNum++;
                 final com.healthmarketscience.jackcess.Row valueMap = it.next();
-                final Object[] values = new Object[columns.length];
-                for (int j = 0; j < columns.length; j++) {
-                    values[j] = valueMap.get(columns[j].getName());
+                final Object[] values = new Object[columns.size()];
+                for (int j = 0; j < columns.size(); j++) {
+                    values[j] = valueMap.get(columns.get(j).getName());
                 }
                 data.add(new DefaultRow(header, values));
             }

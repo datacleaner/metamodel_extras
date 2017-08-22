@@ -19,10 +19,8 @@
  */
 package org.eobjects.metamodel.access;
 
-import java.util.Arrays;
 import java.util.Date;
-
-import junit.framework.TestCase;
+import java.util.List;
 
 import org.apache.metamodel.DataContext;
 import org.apache.metamodel.data.DataSet;
@@ -31,7 +29,8 @@ import org.apache.metamodel.query.Query;
 import org.apache.metamodel.schema.Column;
 import org.apache.metamodel.schema.Schema;
 import org.apache.metamodel.schema.Table;
-import org.eobjects.metamodel.access.AccessDataContext;
+
+import junit.framework.TestCase;
 
 public class AccessDataContextTest extends TestCase {
 
@@ -41,13 +40,13 @@ public class AccessDataContextTest extends TestCase {
         Schema schema = dc.getDefaultSchema();
         assertEquals("developers.mdb", schema.getName());
 
-        assertEquals("[developer, product]", Arrays.toString(schema.getTableNames()));
+        assertEquals("[developer, product]", schema.getTableNames().toString());
 
         Table table = schema.getTableByName("developer");
-        assertEquals("[id, name, email, male, developer_since]", Arrays.toString(table.getColumnNames()));
+        assertEquals("[id, name, email, male, developer_since]", table.getColumnNames().toString());
         
-        Column[] primaryKeys = table.getPrimaryKeys();
-        assertEquals("[Column[name=id,columnNumber=0,type=INTEGER,nullable=null,nativeType=LONG,columnSize=4]]", Arrays.toString(primaryKeys));
+        List<Column> primaryKeys = table.getPrimaryKeys();
+        assertEquals("[Column[name=id,columnNumber=0,type=INTEGER,nullable=null,nativeType=LONG,columnSize=4]]", primaryKeys.toString());
 
         Column nameCol = table.getColumnByName("name");
         assertEquals(
@@ -82,7 +81,7 @@ public class AccessDataContextTest extends TestCase {
         assertEquals("developers.mdb", schema.getName());
 
         Table table = schema.getTableByName("product");
-        assertEquals("[id, name, version, founder_developer]", Arrays.toString(table.getColumnNames()));
+        assertEquals("[id, name, version, founder_developer]", table.getColumnNames().toString());
 
         Column idCol = table.getColumnByName("id");
         assertEquals(
