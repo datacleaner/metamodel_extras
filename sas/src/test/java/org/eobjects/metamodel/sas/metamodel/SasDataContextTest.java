@@ -19,12 +19,9 @@
  */
 package org.eobjects.metamodel.sas.metamodel;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.table.TableModel;
-
-import junit.framework.TestCase;
 
 import org.apache.metamodel.DataContext;
 import org.apache.metamodel.MetaModelHelper;
@@ -34,7 +31,8 @@ import org.apache.metamodel.data.Row;
 import org.apache.metamodel.query.Query;
 import org.apache.metamodel.schema.Schema;
 import org.apache.metamodel.schema.Table;
-import org.eobjects.metamodel.sas.metamodel.SasDataContext;
+
+import junit.framework.TestCase;
 
 public class SasDataContextTest extends TestCase {
 
@@ -68,7 +66,7 @@ public class SasDataContextTest extends TestCase {
 		DataContext dc = new SasDataContext("src/test/resources");
 
 		assertEquals("[information_schema, resources]",
-				Arrays.toString(dc.getSchemaNames()));
+				dc.getSchemaNames().toString());
 
 		Schema schema = dc.getDefaultSchema();
 
@@ -77,7 +75,7 @@ public class SasDataContextTest extends TestCase {
 
 		assertEquals(
 				"[beef, charset_cyrillic_and_more, charset_mostly_latin, event2, mammals, mathattitudes, physeds2006, pizza]",
-				Arrays.toString(schema.getTableNames()));
+				schema.getTableNames().toString());
 
 		Table table = schema.getTableByName("pizza");
 
@@ -89,7 +87,7 @@ public class SasDataContextTest extends TestCase {
 				table.toString());
 
 		assertEquals("[id, mois, prot, fat, ash, sodium, carb, cal, brand]",
-				Arrays.toString(table.getColumnNames()));
+				table.getColumnNames().toString());
 
 		assertEquals(
 				"Column[name=brand,columnNumber=8,type=VARCHAR,nullable=true,nativeType=null,columnSize=1]",

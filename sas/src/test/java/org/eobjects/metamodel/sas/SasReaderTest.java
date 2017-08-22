@@ -114,7 +114,7 @@ public class SasReaderTest extends TestCase {
         CsvDataContext dc = new CsvDataContext(new File("src/test/resources/"
                 + filename), configuration);
 
-        Table table = dc.getDefaultSchema().getTables()[0];
+        Table table = dc.getDefaultSchema().getTable(0);
         Query query = dc.query().from(table).select(table.getColumns())
                 .toQuery();
 

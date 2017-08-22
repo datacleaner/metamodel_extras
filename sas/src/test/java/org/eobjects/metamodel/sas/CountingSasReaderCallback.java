@@ -60,7 +60,7 @@ class CountingSasReaderCallback implements SasReaderCallback {
             int columnLength) {
         columnCount++;
         if (compareToDataSet != null) {
-            SelectItem selectItem = compareToDataSet.getSelectItems()[columnIndex];
+            SelectItem selectItem = compareToDataSet.getSelectItems().get(columnIndex);
             Assert.assertEquals(selectItem.getColumn().getName(), columnName);
         }
     }
@@ -98,7 +98,7 @@ class CountingSasReaderCallback implements SasReaderCallback {
                 if (!benchValue.equals(actualValue)) {
                     logger.error("Bench row:  \"{}\"", Arrays.toString(benchValues));
                     logger.error("Actual row: \"{}\"", Arrays.toString(rowData));
-                    logger.error("Failing column: {}, {}", i, compareToDataSet.getSelectItems()[i].getColumn()
+                    logger.error("Failing column: {}, {}", i, compareToDataSet.getSelectItems().get(i).getColumn()
                             .toString());
                     Assert.assertEquals(
                             "Bench and actual values does not match: " + benchValue + " vs. " + actualValue,

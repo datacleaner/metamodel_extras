@@ -19,6 +19,8 @@
  */
 package org.eobjects.metamodel.sas.metamodel;
 
+import java.util.List;
+
 import org.apache.metamodel.data.RowPublisher;
 import org.apache.metamodel.schema.Column;
 import org.eobjects.metamodel.sas.SasColumnType;
@@ -26,11 +28,11 @@ import org.eobjects.metamodel.sas.SasReaderCallback;
 
 final class DataBuildingSasCallback implements SasReaderCallback {
 
-	private final Column[] _columns;
+	private final List<Column> _columns;
 	private final int _maxRows;
 	private RowPublisher _publisher;
 
-	public DataBuildingSasCallback(RowPublisher publisher, Column[] columns,
+	public DataBuildingSasCallback(RowPublisher publisher, List<Column> columns,
 			int maxRows) {
 		_publisher = publisher;
 		_columns = columns;
@@ -55,9 +57,9 @@ final class DataBuildingSasCallback implements SasReaderCallback {
 			return false;
 		}
 
-		Object[] result = new Object[_columns.length];
+		Object[] result = new Object[_columns.size()];
 		for (int i = 0; i < result.length; i++) {
-			int columnNumber = _columns[i].getColumnNumber();
+			int columnNumber = _columns.get(i).getColumnNumber();
 			result[i] = rowData[columnNumber];
 		}
 

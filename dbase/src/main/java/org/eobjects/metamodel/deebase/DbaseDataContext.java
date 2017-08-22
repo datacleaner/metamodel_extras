@@ -27,9 +27,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.metamodel.MetaModelException;
-import org.apache.metamodel.MetaModelHelper;
 import org.apache.metamodel.QueryPostprocessDataContext;
 import org.apache.metamodel.data.CachingDataSetHeader;
 import org.apache.metamodel.data.DataSet;
@@ -145,7 +145,7 @@ public final class DbaseDataContext extends QueryPostprocessDataContext implemen
     }
 
     @Override
-    public DataSet materializeMainSchemaTable(Table table, Column[] columns, int maxRows) {
+    public DataSet materializeMainSchemaTable(Table table, List<Column> columns, int maxRows) {
         DBF dbf = getDbf();
         synchronized (dbf) {
             int rowNum = 0;
@@ -155,18 +155,18 @@ public final class DbaseDataContext extends QueryPostprocessDataContext implemen
                 throw new MetaModelException(e);
             }
 
-            final SelectItem[] selectItems = MetaModelHelper.createSelectItems(columns);
+            final List<SelectItem> selectItems = columns.stream().map(c -> new SelectItem(c)).collect(Collectors.toList());
             final DataSetHeader header = new CachingDataSetHeader(selectItems);
 
             final List<Row> rowValues = new LinkedList<Row>();
             while (maxRows < 0 || rowNum < maxRows) {
                 rowNum++;
                 try {
-                    Object[] values = new Object[columns.length];
-                    for (int i = 0; i < columns.length; i++) {
-                        int fieldNumber = 1 + columns[i].getColumnNumber();
+                    Object[] values = new Object[columns.size()];
+                    for (int i = 0; i < columns.size(); i++) {
+                        int fieldNumber = 1 + columns.get(i).getColumnNumber();
                         Field field = dbf.getField(fieldNumber);
-                        values[i] = convert(field.get(), columns[i].getType());
+                        values[i] = convert(field.get(), columns.get(i).getType());
                     }
                     rowValues.add(new DefaultRow(header, values));
                 } catch (Exception e) {

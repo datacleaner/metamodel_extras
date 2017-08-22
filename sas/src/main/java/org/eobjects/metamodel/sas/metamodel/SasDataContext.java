@@ -20,9 +20,9 @@
 package org.eobjects.metamodel.sas.metamodel;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.metamodel.DataContext;
 import org.apache.metamodel.MetaModelException;
@@ -111,15 +111,12 @@ public final class SasDataContext extends QueryPostprocessDataContext {
 	}
 
 	@Override
-	protected DataSet materializeMainSchemaTable(Table table, Column[] columns,
+	protected DataSet materializeMainSchemaTable(Table table, List<Column> columns,
 			int maxRows) {
 		SasTable sasTable = (SasTable) table;
 		File file = sasTable.getFile();
 
-		List<SelectItem> selectItems = new ArrayList<SelectItem>(columns.length);
-		for (int i = 0; i < columns.length; i++) {
-			selectItems.add(new SelectItem(columns[i]));
-		}
+		List<SelectItem> selectItems = columns.stream().map(c -> new SelectItem(c)).collect(Collectors.toList());
 
 		SasReader sasReader = new SasReader(file);
 		return new RowPublisherDataSet(

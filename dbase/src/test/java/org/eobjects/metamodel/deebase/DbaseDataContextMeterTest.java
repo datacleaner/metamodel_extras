@@ -19,10 +19,8 @@
  */
 package org.eobjects.metamodel.deebase;
 
-import java.util.Arrays;
 import java.util.Date;
-
-import junit.framework.TestCase;
+import java.util.List;
 
 import org.apache.metamodel.MetaModelException;
 import org.apache.metamodel.data.DataSet;
@@ -35,7 +33,8 @@ import org.apache.metamodel.schema.Schema;
 import org.apache.metamodel.schema.Table;
 import org.apache.metamodel.util.DateUtils;
 import org.apache.metamodel.util.Month;
-import org.eobjects.metamodel.deebase.DbaseDataContext;
+
+import junit.framework.TestCase;
 
 public class DbaseDataContextMeterTest extends TestCase {
 
@@ -55,16 +54,16 @@ public class DbaseDataContextMeterTest extends TestCase {
 
 	public void testExploreSchema() throws Exception {
 		assertEquals("[information_schema, METER.DBF]",
-				Arrays.toString(dc.getSchemaNames()));
+				dc.getSchemaNames().toString());
 
 		Schema schema = dc.getSchemaByName("METER.DBF");
 		assertEquals("[Table[name=METER,type=TABLE,remarks=null]]",
-				Arrays.toString(schema.getTables()));
+				schema.getTables().toString());
 
 		Table table = schema.getTableByName("METER");
 		assertEquals(
 				"[SCENARIO, P_INST, S_INST, A_INST, R_MULT, M_INST, G_BEG, T_BEG, G_NUM, A_NORM, F_KIND, F_TYPE, F_TOU, DATE_N, UTILCALC, DATE_D, UTIL, NAME, U_NAME, U_KIND, U_UNIT, N_UNIT, C_NAME, P_NAME, S_NAME, A_NAME, V1, V2, V3, V4, V5, V6, V7, V8, V9, V10, V11, V12, N1, N2, N3, N4, N5, N6, N7, N8, N9, N10, N11, N12, N_COUNT]",
-				Arrays.toString(table.getColumnNames()));
+				table.getColumnNames().toString());
 
 		Column column = table.getColumnByName("F_TYPE");
 		assertEquals(
@@ -91,7 +90,7 @@ public class DbaseDataContextMeterTest extends TestCase {
 		Schema schema = dc.getSchemaByName("METER.DBF");
 		Table table = schema.getTableByName("METER");
 
-		Column[] columns = table.getColumns();
+		List<Column> columns = table.getColumns();
 		Query q = new Query().select(columns).from(table);
 		assertEquals(ColumnType.CHAR, q.getSelectClause().getItem(0)
 				.getColumn().getType());
@@ -125,10 +124,10 @@ public class DbaseDataContextMeterTest extends TestCase {
 
 		while (ds.next()) {
 			Row row = ds.getRow();
-			SelectItem[] selectItems = row.getSelectItems();
-			for (int i = 0; i < selectItems.length; i++) {
-				SelectItem selectItem = selectItems[i];
-				Column column = columns[i];
+			List<SelectItem> selectItems = row.getSelectItems();
+			for (int i = 0; i < selectItems.size(); i++) {
+				SelectItem selectItem = selectItems.get(i);
+				Column column = columns.get(i);
 				assertSame(selectItem.getColumn(), column);
 
 				Object selectItemValue = row.getValue(selectItem);
