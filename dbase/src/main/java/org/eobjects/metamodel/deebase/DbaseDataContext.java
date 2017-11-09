@@ -64,13 +64,14 @@ public final class DbaseDataContext extends QueryPostprocessDataContext implemen
 
     private final String filename;
     private DBF dbf;
-
-    public DbaseDataContext(String filename) {
-        this.filename = filename;
+    
+    public DbaseDataContext(File file) {
+        this(file.getAbsolutePath());
     }
 
-    public DbaseDataContext(File file) {
-        this.filename = file.getAbsolutePath();
+    public DbaseDataContext(String filename) {
+        super(false);
+        this.filename = filename;
     }
 
     private DBF getDbf() {
