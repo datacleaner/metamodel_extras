@@ -57,6 +57,7 @@ public final class SasDataContext extends QueryPostprocessDataContext {
 	}
 
 	public SasDataContext(File directory) {
+	    super(false);
 		if (directory == null) {
 			throw new IllegalArgumentException("Directory cannot be null");
 		}

@@ -61,13 +61,14 @@ public final class AccessDataContext extends QueryPostprocessDataContext {
 
     private final File _file;
     private Database _database;
-
-    public AccessDataContext(File file) {
-        _file = file;
-    }
-
+    
     public AccessDataContext(String filename) {
         this(new File(filename));
+    }
+
+    public AccessDataContext(File file) {
+        super(false);
+        _file = file;
     }
 
     private Database getDatabase() {
