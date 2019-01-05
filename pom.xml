@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,10 +27,10 @@
 	</description>
 	<scm>
 		<url>https://github.com/datacleaner/metamodel_extras</url>
-		<connection>scm:git:https://github.com/datacleaner/metamodel_extras.git</connection>
-		<developerConnection>scm:git:https://github.com/datacleaner/metamodel_extras.git</developerConnection>
-	  <tag>HEAD</tag>
-  </scm>
+		<connection>scm:git:git@github.com:datacleaner/metamodel_extras.git</connection>
+		<developerConnection>scm:git:git@github.com:datacleaner/metamodel_extras.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
 	<modules>
 		<module>access</module>
 		<module>dbase</module>
