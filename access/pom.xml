@@ -10,7 +10,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.metamodel</groupId>
+			<groupId>org.eobjects.metamodel</groupId>
 			<artifactId>MetaModel-core</artifactId>
 		</dependency>
 		<dependency>

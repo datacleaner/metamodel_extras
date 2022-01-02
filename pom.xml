@@ -6,7 +6,7 @@
 		<sshwagon.version>2.0</sshwagon.version>
 		<javadoc.version>2.8.1</javadoc.version>
 		<junit.version>4.11</junit.version>
-		<metamodel.version>5.2.0</metamodel.version>
+		<metamodel.version>5.3.4</metamodel.version>
 	</properties>
 	<parent>
 		<!-- Uses the OSS sonatype nexus repository for distribution -->
@@ -175,12 +175,12 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.apache.metamodel</groupId>
+				<groupId>org.eobjects.metamodel</groupId>
 				<artifactId>MetaModel-core</artifactId>
 				<version>${metamodel.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.metamodel</groupId>
+				<groupId>org.eobjects.metamodel</groupId>
 				<artifactId>MetaModel-full</artifactId>
 				<version>${metamodel.version}</version>
 			</dependency>
