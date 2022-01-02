@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.eobjects.metamodel-extras</groupId>
 		<artifactId>MetaModel-extras</artifactId>
-		<version>5.3.4</version>
+		<version>5.3.5-SNAPSHOT</version>
 	</parent>
 	<artifactId>MetaModel-extras-access</artifactId>
 	<description>A module for Apache MetaModel to read MS Access (.mdb and .accdb) database files</description>
