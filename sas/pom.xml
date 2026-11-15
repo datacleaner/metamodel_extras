@@ -1,21 +1,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.eobjects.metamodel-extras</groupId>
-		<artifactId>MetaModel-extras</artifactId>
+		<groupId>org.datacleaner.metamodel</groupId>
+		<artifactId>metamodel-extras</artifactId>
 		<version>5.3.5-SNAPSHOT</version>
 	</parent>
-	<artifactId>MetaModel-extras-sas</artifactId>
+	<artifactId>metamodel-extras-sas</artifactId>
 	<description>A module for Apache MetaModel to read SAS (.sas7bdat) database files</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.eobjects.metamodel</groupId>
-			<artifactId>MetaModel-core</artifactId>
+			<groupId>org.datacleaner.metamodel</groupId>
+			<artifactId>metamodel-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.eobjects.metamodel</groupId>
-			<artifactId>MetaModel-full</artifactId>
+			<groupId>org.datacleaner.metamodel</groupId>
+			<artifactId>metamodel-full</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
